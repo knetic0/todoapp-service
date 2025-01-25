@@ -1,7 +1,6 @@
-package com.pieces.todoapp.core.security.jwt.config;
+package com.pieces.todoapp.config;
 
 import com.pieces.todoapp.filters.AuthenticationFilter;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
