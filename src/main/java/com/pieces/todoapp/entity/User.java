@@ -3,6 +3,7 @@ package com.pieces.todoapp.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -30,6 +31,7 @@ public class User implements UserDetails {
 
     private boolean isEnabled = true;
 
+    @CreationTimestamp
     private Date createdTime;
 
     @OneToMany(mappedBy = "user")
