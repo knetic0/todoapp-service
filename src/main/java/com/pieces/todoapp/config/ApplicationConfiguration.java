@@ -1,4 +1,4 @@
-package com.pieces.todoapp.core.security.jwt.config;
+package com.pieces.todoapp.config;
 
 import com.pieces.todoapp.repository.IUserRepository;
 import lombok.AllArgsConstructor;
