@@ -3,9 +3,12 @@ package com.pieces.todoapp.business.concretes;
 import com.pieces.todoapp.business.UserBusinessRules;
 import com.pieces.todoapp.business.abstracts.IUserService;
 import com.pieces.todoapp.core.mapper.IModelMapperService;
+import com.pieces.todoapp.core.result.Result;
 import com.pieces.todoapp.core.security.jwt.ITokenHelper;
 import com.pieces.todoapp.dto.request.CreateUserRequest;
 import com.pieces.todoapp.dto.request.UserLoginRequest;
+import com.pieces.todoapp.dto.response.CreateUserResponse;
+import com.pieces.todoapp.dto.response.UserLoginResponse;
 import com.pieces.todoapp.entity.User;
 import com.pieces.todoapp.repository.IUserRepository;
 import lombok.AllArgsConstructor;
@@ -15,29 +18,27 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class UserService implements IUserService {
-    private IUserRepository userRepository;
-    private IModelMapperService modelMapperService;
-    private PasswordEncoder passwordEncoder;
-    private UserBusinessRules userBusinessRules;
-    private ITokenHelper tokenHelper;
+    private final IUserRepository userRepository;
+    private final IModelMapperService modelMapperService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserBusinessRules userBusinessRules;
+    private final ITokenHelper tokenHelper;
 
     @Override
-    public void create(CreateUserRequest createUserRequest) {
-        this.userBusinessRules.checkIfUserExists(createUserRequest.getUserName(), createUserRequest.getEmail());
-        User user = this.modelMapperService.forRequest().map(createUserRequest, User.class);
+    public Result<CreateUserResponse> create(CreateUserRequest createUserRequest) {
+        userBusinessRules.checkIfUserExists(createUserRequest.getUsername(), createUserRequest.getEmail());
+        User user = modelMapperService.forRequest().map(createUserRequest, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        this.userRepository.save(user);
+        userRepository.save(user);
+        return new Result<>(true);
     }
 
     @Override
-    public String login(UserLoginRequest userLoginRequest) {
-        User user = this.userBusinessRules.checkIfUserExistsAndComparePassword(userLoginRequest.getUsername(), userLoginRequest.getPassword());
-        if(user != null) {
-            String token = tokenHelper.generateToken(user);
-            return token;
+    public Result<UserLoginResponse> login(UserLoginRequest userLoginRequest) {
+        Result<User> result = userBusinessRules.checkIfUserExistsAndComparePassword(userLoginRequest.getUsername(), userLoginRequest.getPassword());
+        if(result.isSuccess()) {
+            return new Result<>(true, new UserLoginResponse(tokenHelper.generateToken(result.getData())));
         }
-        return null;
+        return new Result<>(false, result.getMessage());
     }
-
-
 }

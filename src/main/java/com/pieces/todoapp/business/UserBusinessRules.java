@@ -1,6 +1,8 @@
 package com.pieces.todoapp.business;
 
+import com.pieces.todoapp.business.constants.Messages;
 import com.pieces.todoapp.core.exeption.BusinessExeption;
+import com.pieces.todoapp.core.result.Result;
 import com.pieces.todoapp.entity.User;
 import com.pieces.todoapp.repository.IUserRepository;
 import lombok.AllArgsConstructor;
@@ -14,15 +16,19 @@ public class UserBusinessRules {
     private PasswordEncoder passwordEncoder;
 
     public void checkIfUserExists(String username, String email) {
-        this.userRepository.existsByUsername(username).orElseThrow(() -> new BusinessExeption("kullanici mevcut"));
-        this.userRepository.existsByEmail(email).orElseThrow(() -> new BusinessExeption("mail mevcut"));
+        if(userRepository.existsByUsername(username)) {
+            throw new BusinessExeption(Messages.UserExists);
+        }
+        if(userRepository.existsByEmail(email)) {
+            throw new BusinessExeption(Messages.UserExists);
+        }
     }
 
-    public User checkIfUserExistsAndComparePassword(String username, String password) {
-        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new BusinessExeption("kullanici mevcut degil"));
+    public Result<User> checkIfUserExistsAndComparePassword(String username, String password) {
+        User user = this.userRepository.findByUsername(username).orElseThrow(() -> new BusinessExeption(Messages.UserDoesNotExist));
         if(passwordEncoder.matches(password, user.getPassword())){
-            return user;
+            return new Result<>(true, user);
         }
-        return null;
+        return new Result<>(false, Messages.IncorrectPassword, user);
     }
 }
