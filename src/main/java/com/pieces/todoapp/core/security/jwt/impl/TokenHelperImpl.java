@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@Getter
 public class TokenHelperImpl implements ITokenHelper {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
@@ -54,7 +52,7 @@ public class TokenHelperImpl implements ITokenHelper {
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + getExpirationTime()))
+                .setExpiration(new Date(System.currentTimeMillis() + this.expirationTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -77,7 +75,7 @@ public class TokenHelperImpl implements ITokenHelper {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(getSecretKey());
+        byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -1,8 +1,10 @@
 package com.pieces.todoapp.dto.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class CreateUserRequest {
     private String firstName;
 
@@ -10,7 +12,7 @@ public class CreateUserRequest {
 
     private String email;
 
-    private String userName;
+    private String username;
 
     private String password;
 }

@@ -1,7 +1,6 @@
 package com.pieces.todoapp.config;
 
 import com.pieces.todoapp.filters.AuthenticationFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +14,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     private final AuthenticationFilter authenticationFilter;
+
+    public SecurityConfiguration(AuthenticationProvider authenticationProvider, AuthenticationFilter authenticationFilter) {
+        this.authenticationProvider = authenticationProvider;
+        this.authenticationFilter = authenticationFilter;
+    }
 
     @Value("${security.jwt.urls}")
     private String requestMatchers;
@@ -29,9 +32,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(requestMatchers)
-                        .permitAll()
-                        .anyRequest()
                         .authenticated()
+                        .anyRequest()
+                        .permitAll()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

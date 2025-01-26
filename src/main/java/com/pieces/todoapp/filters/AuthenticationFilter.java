@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,10 +19,17 @@ import java.io.IOException;
 import java.util.Objects;
 
 @Component
-@AllArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
     private final ITokenHelper tokenHelper;
     private final UserDetailsService userDetailsService;
+
+    private final static String AUTHORIZATION_HEADER = "Authorization";
+    private final static String BEARER_PREFIX = "Bearer ";
+
+    public AuthenticationFilter(ITokenHelper tokenHelper, UserDetailsService userDetailsService) {
+        this.tokenHelper = tokenHelper;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -31,14 +37,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException, NullPointerException {
-        final String authorizationHeader = request.getHeader("Authorization");
+        final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if(authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String token = Objects.requireNonNull(authorizationHeader).split(" ")[1];
+        final String token = authorizationHeader.substring(BEARER_PREFIX.length() + 1);
         final String username = tokenHelper.extractUsername(token);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
