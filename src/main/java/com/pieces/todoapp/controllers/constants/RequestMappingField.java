@@ -6,4 +6,5 @@ public class RequestMappingField {
     public static final String GET_TODOS_MAP = "/api/auth/todo/getAll";
     public static final String DELETE_TODO_MAP = "/api/auth/todo/delete/{id}";
     public static final String CREATE_TODO_MAP = "/api/auth/todo/create";
+    public static final String UPDATE_TODO_MAP = "/api/auth/todo/update/{id}";
 }
