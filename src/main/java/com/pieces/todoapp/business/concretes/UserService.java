@@ -1,6 +1,7 @@
 package com.pieces.todoapp.business.concretes;
 
-import com.pieces.todoapp.business.UserBusinessRules;
+import com.pieces.todoapp.business.constants.Messages;
+import com.pieces.todoapp.business.rules.UserBusinessRules;
 import com.pieces.todoapp.business.abstracts.IUserService;
 import com.pieces.todoapp.core.mapper.IModelMapperService;
 import com.pieces.todoapp.core.result.Result;
@@ -26,11 +27,14 @@ public class UserService implements IUserService {
 
     @Override
     public Result<CreateUserResponse> create(CreateUserRequest createUserRequest) {
-        userBusinessRules.checkIfUserExists(createUserRequest.getUsername(), createUserRequest.getEmail());
+        Result<User> result = userBusinessRules.checkIfUserExists(createUserRequest.getUsername(), createUserRequest.getEmail());
+        if(result.isSuccess()){
+            return new Result<>(false, result.getMessage());
+        }
         User user = modelMapperService.forRequest().map(createUserRequest, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return new Result<>(true);
+        return new Result<>(true, Messages.UserRegistered);
     }
 
     @Override
