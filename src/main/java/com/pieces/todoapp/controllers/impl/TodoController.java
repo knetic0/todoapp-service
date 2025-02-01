@@ -4,6 +4,7 @@ import com.pieces.todoapp.business.abstracts.ITodoService;
 import com.pieces.todoapp.controllers.ITodoController;
 import com.pieces.todoapp.core.result.Result;
 import com.pieces.todoapp.dto.request.CreateTodoRequest;
+import com.pieces.todoapp.dto.request.UpdateTodoRequest;
 import com.pieces.todoapp.dto.response.GetAllTodosResponse;
 import com.pieces.todoapp.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,16 +26,21 @@ public class TodoController implements ITodoController {
         this.todoService = todoService;
     }
 
+    @Override
     public void create(@RequestBody CreateTodoRequest request, HttpServletRequest req){
         User user = (User) req.getAttribute("user");
         todoService.create(request, user);
-
     }
 
     @Override
     public Result<List<GetAllTodosResponse>> getAll(HttpServletRequest req) {
         User user = (User) req.getAttribute("user");
         return todoService.getAll(user.getId());
+    }
+
+    @Override
+    public void update(UpdateTodoRequest request, int id) {
+        todoService.update(request,id);
     }
 
     @Override
