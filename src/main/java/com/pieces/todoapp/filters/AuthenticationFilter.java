@@ -44,12 +44,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String token = authorizationHeader.substring(BEARER_PREFIX.length() + 1);
+        final String token = authorizationHeader.substring(BEARER_PREFIX.length());
         final String username = tokenHelper.extractUsername(token);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(username != null && authentication != null) {
+        if(username != null && authentication == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if(tokenHelper.isTokenValid(token, userDetails)) {
@@ -57,7 +57,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities()
                 );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 request.setAttribute("user", userDetails);
             }
         }
