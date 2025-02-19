@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "todoapp-api-test",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

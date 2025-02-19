@@ -1,0 +1,23 @@
+meta {
+  name: Create
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/auth/todo/create
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWhtZXRzb2xhayIsImlhdCI6MTczODQxMzYxNCwiZXhwIjoxNzM4NDE3MjE0fQ.XkBotDiC4o5hnkMztkAj4YDXyAVXYT28Q6_w-a1sHhA
+}
+
+body:json {
+  {
+    "title": "Yemek yapilacak",
+    "content": "Yemek yapiliyor...",
+    "dueTime": "2025-02-02T13:34:00.000"
+  }
+}
